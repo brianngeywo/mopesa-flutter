@@ -66,11 +66,104 @@ class MyHomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text(this.title),
-      ),
-      body: Center(
-        child: Text('Hello World this is my first flutter app')),
+      appBar: AppBar(title: Text("Product Listing")),
+      body: ListView(
+        shrinkWrap: true,
+        padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
+        children: <Widget>[
+          ProductBox(
+            name: "iPhone",
+            description: "iPhone is the stylist phone ever",
+            price: 10000,
+            image: "1.jpg"
+          ),
+          ProductBox(
+            name: "iPhone",
+            description: "iPhone is the stylist phone ever",
+            price: 10000,
+            image: "2.jpg"
+          ),
+          ProductBox(
+            name: "iPhone",
+            description: "iPhone is the stylist phone ever",
+            price: 10000,
+            image: "3.jpg"
+          ),
+          ProductBox(
+            name: "iPhone",
+            description: "iPhone is the stylist phone ever",
+            price: 10000,
+            image: "4.jpg"
+          ),
+          ProductBox(
+            name: "iPhone",
+            description: "iPhone is the stylist phone ever",
+            price: 10000,
+            image: "5.jpg"
+          ),
+          ProductBox(
+            name: "iPhone",
+            description: "iPhone is the stylist phone ever",
+            price: 10000,
+            image: "6.jpg"
+          ),
+          ProductBox(
+            name: "iPhone",
+            description: "iPhone is the stylist phone ever",
+            price: 10000,
+            image: "7.jpg"
+          ),
+          ProductBox(
+            name: "iPhone",
+            description: "iPhone is the stylist phone ever",
+            price: 10000,
+            image: "8.jpg"
+          ),
+          ProductBox(
+            name: "iPhone",
+            description: "iPhone is the stylist phone ever",
+            price: 10000,
+            image: "9.jpg"
+          ),
+        ],
+      )
     );
+  }
+}
+
+class ProductBox extends StatelessWidget {
+  ProductBox({Key key, this.name, this.description, this.price, this.image}) : super(key: key);
+  final String name;
+  final String description;
+  final int price;
+  final String image;
+
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(2),
+      height: 120,
+      child: Card(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Container(
+              child: Image.asset("assets/images/" + image,             	
+                fit: BoxFit.cover,
+                height: double.infinity,
+                width: 150,
+            )),
+            Expanded(
+              child: Container(
+                padding: EdgeInsets.all(10),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    Text(this.name,
+                    style: TextStyle(fontWeight: FontWeight.w800)),
+                    Text(this.description),
+                    Text("Price: " + this.price.toString()),
+                  ],
+                )))
+          ])));
   }
 }
