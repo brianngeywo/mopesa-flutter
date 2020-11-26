@@ -63,107 +63,39 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatelessWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
+
+  void _showDialog(BuildContext context) {
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: new Text("Message"),
+            content: new Text("Hello world"),
+            actions: <Widget>[
+              new FlatButton(
+                child: new Text("funga hii kitu"),
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+              ),
+            ],
+          );
+        });
+  }
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("Product Listing")),
-      body: ListView(
-        shrinkWrap: true,
-        padding: const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 10.0),
-        children: <Widget>[
-          ProductBox(
-            name: "iPhone",
-            description: "iPhone is the stylist phone ever",
-            price: 10000,
-            image: "1.jpg"
+        appBar: AppBar(title: Text("gestures")),
+        body: Center(
+          child: GestureDetector(
+            onTap: () {
+              _showDialog(context);
+            },
+            child: Text('Helloworld'),
           ),
-          ProductBox(
-            name: "iPhone",
-            description: "iPhone is the stylist phone ever",
-            price: 10000,
-            image: "2.jpg"
-          ),
-          ProductBox(
-            name: "iPhone",
-            description: "iPhone is the stylist phone ever",
-            price: 10000,
-            image: "3.jpg"
-          ),
-          ProductBox(
-            name: "iPhone",
-            description: "iPhone is the stylist phone ever",
-            price: 10000,
-            image: "4.jpg"
-          ),
-          ProductBox(
-            name: "iPhone",
-            description: "iPhone is the stylist phone ever",
-            price: 10000,
-            image: "5.jpg"
-          ),
-          ProductBox(
-            name: "iPhone",
-            description: "iPhone is the stylist phone ever",
-            price: 10000,
-            image: "6.jpg"
-          ),
-          ProductBox(
-            name: "iPhone",
-            description: "iPhone is the stylist phone ever",
-            price: 10000,
-            image: "7.jpg"
-          ),
-          ProductBox(
-            name: "iPhone",
-            description: "iPhone is the stylist phone ever",
-            price: 10000,
-            image: "8.jpg"
-          ),
-          ProductBox(
-            name: "iPhone",
-            description: "iPhone is the stylist phone ever",
-            price: 10000,
-            image: "9.jpg"
-          ),
-        ],
-      )
-    );
+        ));
   }
 }
 
-class ProductBox extends StatelessWidget {
-  ProductBox({Key key, this.name, this.description, this.price, this.image}) : super(key: key);
-  final String name;
-  final String description;
-  final int price;
-  final String image;
-
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(2),
-      height: 120,
-      child: Card(
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Container(
-              child: Image.asset("assets/images/" + image,             	
-                fit: BoxFit.cover,
-                height: double.infinity,
-                width: 150,
-            )),
-            Expanded(
-              child: Container(
-                padding: EdgeInsets.all(10),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: <Widget>[
-                    Text(this.name,
-                    style: TextStyle(fontWeight: FontWeight.w800)),
-                    Text(this.description),
-                    Text("Price: " + this.price.toString()),
-                  ],
-                )))
-          ])));
-  }
-}
