@@ -1,239 +1,94 @@
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+
+Future<Album> fetchAlbum() async {
+  final response =
+      await http.get('https://my-flutter-api.herokuapp.com/posts/1');
+
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    return Album.fromJson(jsonDecode(response.body));
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load album');
+  }
+}
+
+class Album {
+  final int id;
+  final String title;
+  final String body;
+
+  Album({this.id, this.title, this.body});
+
+  factory Album.fromJson(Map<String, dynamic> json) {
+    return Album(
+      id: json['id'],
+      title: json['title'],
+      body: json['body'],
+    );
+  }
+}
 
 void main() => runApp(MyApp());
 
-class Product {
-  final String name;
-  final String description;
-  final int price;
-  final String image;
-  Product(this.name, this.description, this.price, this.image);
-  static List<Product> getProducts() {
-    List<Product> items = <Product>[];
-    items.add(Product(
-        "Pixel", "Pixel is the most featureful phone ever", 800, "1.jpg"));
-    items.add(Product("Laptop", "Laptop is most productive development tool",
-        2000, "2.jpg"));
-    items.add(Product(
-        "Tablet",
-        "Tablet is the most useful device ever for meeting",
-        1500,
-        "3.jpg"));
-    items.add(Product(
-        "Pendrive", "iPhone is the stylist phone ever", 100, "4.jpg"));
-    items.add(Product(
-        "Floppy Drive", "iPhone is the stylist phone ever", 20, "5.jpg"));
-    items.add(Product(
-        "iPhone", "iPhone is the stylist phone ever", 1000, "6.jpg"));
-    return items;
-  }
+class MyApp extends StatefulWidget {
+  MyApp({Key key}) : super(key: key);
+
+  @override
+  _MyAppState createState() => _MyAppState();
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class _MyAppState extends State<MyApp> {
+  Future<Album> futureAlbum;
+
+  @override
+  void initState() {
+    super.initState();
+    futureAlbum = fetchAlbum();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Fetch Data Example',
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: MyHomePage(title: 'Product Navigation demo home page'),
-    );
-  }
-}
-
-class MyHomePage extends StatelessWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
-  final String title;
-  final items = Product.getProducts();
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        appBar: AppBar(title: Text("Product Navigation")),
-        body: ListView.builder(
-          itemCount: items.length,
-          itemBuilder: (context, index) {
-            return GestureDetector(
-              child: ProductBox(item: items[index]),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => ProductPage(item: items[index]),
-                  ),
+      home: Scaffold(
+        appBar: AppBar(
+          title: Text('Fetch Data Example'),
+        ),
+        body: Center(
+          child: FutureBuilder<Album>(
+            future: futureAlbum,
+            builder: (context, snapshot) {
+              if (snapshot.hasData) {
+                return Container(
+                  child: Center(
+                    child: Column(
+                      children: [
+                          new  Text(snapshot.data.title),
+                          new  Text(snapshot.data.body)
+                      ],
+                    ),
+                  )
                 );
-              },
-            );
-          },
-        ));
-  }
-}
+              } else if (snapshot.hasError) {
+                return Text("${snapshot.error}");
+              }
 
-class ProductPage extends StatelessWidget {
-  ProductPage({Key key, this.item}) : super(key: key);
-  final Product item;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(this.item.name),
-      ),
-      body: Center(
-        child: Container(
-          padding: EdgeInsets.all(0),
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  child: Image.asset("assets/images/" + this.item.image,
-                  width: double.infinity,
-                  height: 300,
-                  fit: BoxFit.cover,
-                  ), 
-                ),
-                Expanded(
-                    child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Text(this.item.name,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(this.item.description),
-                            Text("Price: " + this.item.price.toString()),
-                            RatingBox(),
-                          ],
-                        )))
-              ]),
+              // By default, show a loading spinner.
+              return CircularProgressIndicator();
+            },
+          ),
         ),
       ),
     );
-  }
-}
-
-class RatingBox extends StatefulWidget {
-  @override
-  _RatingBoxState createState() => _RatingBoxState();
-}
-
-class _RatingBoxState extends State<RatingBox> {
-  int _rating = 0;
-  void _setRatingAsOne() {
-    setState(() {
-      _rating = 1;
-    });
-  }
-
-  void _setRatingAsTwo() {
-    setState(() {
-      _rating = 2;
-    });
-  }
-
-  void _setRatingAsThree() {
-    setState(() {
-      _rating = 3;
-    });
-  }
-
-  Widget build(BuildContext context) {
-    double _size = 20;
-    print(_rating);
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.end,
-      crossAxisAlignment: CrossAxisAlignment.end,
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        Container(
-          padding: EdgeInsets.all(0),
-          child: IconButton(
-            icon: (_rating >= 1
-                ? Icon(
-                    Icons.star,
-                    size: _size,
-                  )
-                : Icon(
-                    Icons.star_border,
-                    size: _size,
-                  )),
-            color: Colors.red[500],
-            onPressed: _setRatingAsOne,
-            iconSize: _size,
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(0),
-          child: IconButton(
-            icon: (_rating >= 2
-                ? Icon(
-                    Icons.star,
-                    size: _size,
-                  )
-                : Icon(
-                    Icons.star_border,
-                    size: _size,
-                  )),
-            color: Colors.red[500],
-            onPressed: _setRatingAsTwo,
-            iconSize: _size,
-          ),
-        ),
-        Container(
-          padding: EdgeInsets.all(0),
-          child: IconButton(
-            icon: (_rating >= 3
-                ? Icon(
-                    Icons.star,
-                    size: _size,
-                  )
-                : Icon(
-                    Icons.star_border,
-                    size: _size,
-                  )),
-            color: Colors.red[500],
-            onPressed: _setRatingAsThree,
-            iconSize: _size,
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ProductBox extends StatelessWidget {
-  ProductBox({Key key, this.item}) : super(key: key);
-  final Product item;
-  Widget build(BuildContext context) {
-    return Container(
-        padding: EdgeInsets.all(2),
-        height: 140,
-        child: Card(
-          child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Container(
-                  child: Image.asset("assets/images/" + this.item.image,
-                  width: 150,
-                  height: double.infinity,
-                  fit: BoxFit.cover,
-                  ), 
-                ),
-                Expanded(
-                    child: Container(
-                        padding: EdgeInsets.all(5),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            Text(this.item.name,
-                                style: TextStyle(fontWeight: FontWeight.bold)),
-                            Text(this.item.description),
-                            Text("Price: " + this.item.price.toString()),
-                            RatingBox(),
-                          ],
-                        )))
-              ]),
-        ));
   }
 }
